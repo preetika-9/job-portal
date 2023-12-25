@@ -64,10 +64,10 @@ class AccountController extends Controller
         ]);
 
         if ($validator->passes()) {
-            if(Auth::attempt(['email' => $request->email, 'password' => $request->password])){
+            if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
                 return redirect()->route('account.profile');
-            }else{
-                return redirect()->route('account.login')->with('error','Either Email / Password is incorrect');
+            } else {
+                return redirect()->route('account.login')->with('error', 'Either Email / Password is incorrect');
             }
         } else {
             return redirect()->route('account.login')
@@ -76,27 +76,29 @@ class AccountController extends Controller
         };
     }
 
-    public function profile() {
+    public function profile()
+    {
 
         $id = Auth::user()->id;
-       
+
         $user = User::where('id', $id)->first();
         // $user = User::find($id);
-     
 
-        return view('front.account.profile',[
+
+        return view('front.account.profile', [
             'user' => $user
         ]);
     }
 
-    public function updateProfile(Request $request){
+    public function updateProfile(Request $request)
+    {
         $id = Auth::user()->id;
-        $validator = Validator::make($request->all(),[
+        $validator = Validator::make($request->all(), [
             'name' => 'required|min:5|max:20',
-            'email' => 'required|email|unique:users,email,'.$id.',id'
+            'email' => 'required|email|unique:users,email,' . $id . ',id'
         ]);
 
-        if($validator->passes()){
+        if ($validator->passes()) {
             $user = User::find($id);
             $user->name = $request->name;
             $user->email = $request->email;
@@ -110,16 +112,48 @@ class AccountController extends Controller
                 'status' => true,
                 'errors' => []
             ]);
-        }else{
+        } else {
             return response()->json([
                 'status' => false,
-                'errors' =>$validator->errors()
+                'errors' => $validator->errors()
             ]);
         }
     }
 
-    public function logout() {
+    public function logout()
+    {
         Auth::logout();
         return redirect()->route('account.login');
+    }
+
+    public function updateProfilePic(Request $request)
+    {
+        $id = Auth::user()->id;
+        // dd($request->all());
+        $validator = Validator::make($request->all(), [
+            'image' => 'required|image'
+        ]);
+
+        if ($validator->passes()) {
+
+            $image = $request->image;
+            $ext = $image->getClientOriginalExtension();
+            $imageName = $id . '-' . time() . '-' . $ext; //3-12242023.png
+            $image->move(public_path('/profile_pic/'), $imageName);
+
+            User::where('id', $id)->update(['image' => $imageName]);
+
+            session()->flash('success', 'Profile picture updated successfully');
+
+            return response()->json([
+                'status' => true,
+                'errors' => []
+            ]);
+        } else {
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors()
+            ]);
+        }
     }
 }
