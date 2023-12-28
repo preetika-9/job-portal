@@ -203,7 +203,7 @@ class AccountController extends Controller
             $job->experience = $request->experience;
             $job->company_name = $request->company_name;
             $job->company_location = $request->company_location;
-            $job->company_website = $request->company_website;
+            $job->company_website = $request->website;
             $job->save();
 
             session()->flash('success', 'Job added successfully.');
@@ -222,5 +222,6 @@ class AccountController extends Controller
 
     public function myJobs()
     {
+        return view('front.account.job.my-jobs');
     }
 }
