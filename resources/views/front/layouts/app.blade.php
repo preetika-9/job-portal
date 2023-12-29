@@ -43,7 +43,7 @@
                         <a class="btn btn-outline-primary me-2" href="{{ route('account.profile') }}"
                             type="submit">Account</a>
                     @endif
-                    <a class="btn btn-primary" href="post-job.html" type="submit">Post a Job</a>
+                    <a class="btn btn-primary" href="{{ route('account.createJob') }}" type="submit">Post a Job</a>
                 </div>
             </div>
         </nav>
@@ -93,27 +93,27 @@
             }
         })
 
-        $("#profilePicForm").submit(function(e){
+        $("#profilePicForm").submit(function(e) {
             e.preventDefault();
 
             var formData = new FormData(this);
 
             $.ajax({
-                url:'{{ route("account.updateProfilePic") }}',
-                type:'post',
-                data:formData,
-                dataType:'json',
-                contentType:false,
-                processData:false,
-                success:function(response){
-                  if(response.status == false){
-                    var errors = response.errors;
-                    if(errors.image){
-                        $("#image-error").html(errors.image)
+                url: '{{ route('account.updateProfilePic') }}',
+                type: 'post',
+                data: formData,
+                dataType: 'json',
+                contentType: false,
+                processData: false,
+                success: function(response) {
+                    if (response.status == false) {
+                        var errors = response.errors;
+                        if (errors.image) {
+                            $("#image-error").html(errors.image)
+                        }
+                    } else {
+                        window.location.href = '{{ url()->current() }}';
                     }
-                  }else{
-                    window.location.href = '{{ url()->current() }}';
-                  }
                 }
             })
         })
